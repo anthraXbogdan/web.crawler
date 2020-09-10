@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="WebCrawler_4.1:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/WebCrawler_4_1_jar</output-path>
+    <root id="archive" name="WebCrawler_4.1.jar">
+      <element id="module-output" name="WebCrawler_4.1" />
+    </root>
+  </artifact>
+</component>

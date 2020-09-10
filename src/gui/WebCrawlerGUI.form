@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="gui.WebCrawlerGUI">
+  <grid id="27dc6" binding="rootPanel" layout-manager="GridLayoutManager" row-count="5" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+    <margin top="5" left="5" bottom="5" right="5"/>
+    <constraints>
+      <xy x="20" y="20" width="601" height="810"/>
+    </constraints>
+    <properties>
+      <background color="-1286"/>
+    </properties>
+    <border type="none"/>
+    <children>
+      <component id="508f7" class="javax.swing.JLabel" binding="urlLabel">
+        <constraints>
+          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <background color="-3024932"/>
+          <font name="Yu Gothic UI Semilight" size="14" style="0"/>
+          <foreground color="-15526622"/>
+          <text value="URL :"/>
+        </properties>
+      </component>
+      <component id="81492" class="javax.swing.JTextField" binding="urlTextField">
+        <constraints>
+          <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="3" indent="0" use-parent-layout="false">
+            <preferred-size width="150" height="-1"/>
+          </grid>
+        </constraints>
+        <properties>
+          <background color="-1286"/>
+          <font name="Yu Gothic UI Semilight" size="16" style="0"/>
+        </properties>
+      </component>
+      <component id="9c6ce" class="javax.swing.JButton" binding="runButton">
+        <constraints>
+          <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <selected value="false"/>
+          <text value="Parse"/>
+        </properties>
+      </component>
+      <scrollpane id="1f49c" binding="scrollPane">
+        <constraints>
+          <grid row="3" column="0" row-span="1" col-span="3" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <background color="-3614744"/>
+          <foreground color="-16777216"/>
+          <horizontalScrollBarPolicy value="30"/>
+          <opaque value="false"/>
+          <verticalScrollBarPolicy value="20"/>
+        </properties>
+        <border type="none" title=""/>
+        <children>
+          <component id="8e2bd" class="javax.swing.JTable" binding="titlesTable">
+            <constraints/>
+            <properties>
+              <autoCreateColumnsFromModel value="true"/>
+              <background color="-3614744"/>
+              <cellSelectionEnabled value="false"/>
+              <doubleBuffered value="true"/>
+              <dropMode value="INSERT"/>
+              <focusTraversalPolicyProvider value="false"/>
+              <font name="Microsoft JhengHei UI" size="12" style="0"/>
+              <foreground color="-15653078"/>
+              <gridColor color="-15526622"/>
+              <inheritsPopupMenu value="false"/>
+              <intercellSpacing width="2" height="2"/>
+              <selectionBackground color="-11833681"/>
+              <showHorizontalLines value="true"/>
+            </properties>
+          </component>
+        </children>
+      </scrollpane>
+      <component id="fc53a" class="javax.swing.JButton" binding="clearButton">
+        <constraints>
+          <grid row="1" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <text value="Clear All"/>
+        </properties>
+      </component>
+      <component id="6e89c" class="javax.swing.JLabel" binding="titleLabel">
+        <constraints>
+          <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <focusable value="true"/>
+          <font name="Yu Gothic UI Semilight" size="14" style="0"/>
+          <foreground color="-15526622"/>
+          <text value="Title :"/>
+        </properties>
+      </component>
+      <component id="45c96" class="javax.swing.JLabel" binding="webPageTitle">
+        <constraints>
+          <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="7" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <font name="Yu Gothic UI" size="15" style="1"/>
+          <foreground color="-13419974"/>
+          <text value=""/>
+        </properties>
+      </component>
+      <component id="fe9c" class="javax.swing.JTextField" binding="exportUrlTextField">
+        <constraints>
+          <grid row="4" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+            <preferred-size width="150" height="-1"/>
+          </grid>
+        </constraints>
+        <properties/>
+      </component>
+      <component id="5dbf7" class="javax.swing.JLabel" binding="exportLabel">
+        <constraints>
+          <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <enabled value="true"/>
+          <font name="Yu Gothic UI Semilight" size="14" style="0"/>
+          <foreground color="-15526622"/>
+          <horizontalAlignment value="10"/>
+          <text value="Export to :"/>
+        </properties>
+      </component>
+      <component id="f856" class="javax.swing.JButton" binding="saveButton" default-binding="true">
+        <constraints>
+          <grid row="4" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <text value="Save"/>
+        </properties>
+      </component>
+      <component id="538dc" class="javax.swing.JProgressBar" binding="progressBar">
+        <constraints>
+          <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <borderPainted value="false"/>
+          <enabled value="true"/>
+          <stringPainted value="true"/>
+        </properties>
+      </component>
+    </children>
+  </grid>
+</form>
