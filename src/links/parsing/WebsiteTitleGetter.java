@@ -11,7 +11,7 @@ import java.util.regex.Pattern;
 public class WebsiteTitleGetter  {
 
     public static String getTitle(String url) {
-        String title = "";
+        String title = "No title";
         try (InputStream inputStream = new BufferedInputStream(new URL(url).openStream())) {
 
             String siteText = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);

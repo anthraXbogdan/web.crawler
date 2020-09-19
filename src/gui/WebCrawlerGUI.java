@@ -11,6 +11,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
+import javax.xml.crypto.Data;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
@@ -18,8 +19,10 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -28,19 +31,32 @@ import java.util.regex.Pattern;
 public class WebCrawlerGUI extends JFrame {
 
     private JPanel rootPanel;
+    private JTextField noOfWorkers;
+    private JTextField depthSearchNo;
+    private JTextField timeLimitNo;
+    private JLabel workers;
+    private JLabel maximumDepth;
+    private JCheckBox maxDepthCheckBox;
+    private JLabel maxDepthEnabled;
+    private JLabel timeLimit;
+    private JLabel elapsedTime;
+    private JLabel parsedPages;
+    private JCheckBox timeLimitCheckBox;
+    private JLabel timeLimitEnabled;
     private JTextField urlTextField;
     private JButton runButton;
     private JButton clearButton;
     private JLabel urlLabel;
-    private JTextArea htmlTextArea;
-    private JLabel titleLabel;
-    private JLabel webPageTitle;
-    private JScrollPane scrollPane;
     private JTable titlesTable;
-    private JTextField exportUrlTextField;
     private JButton saveButton;
-    private JLabel exportLabel;
+    private JLabel time;
+    private JLabel pages;
     private JProgressBar progressBar;
+    private JScrollPane scrollPane;
+    private JLabel currentURL;
+    private JLabel currentWebpageTitle;
+    private JLabel currentLinkURL;
+    private JLabel currentParsedURL;
 
     static String url;
     static String trimmedURL;
@@ -52,6 +68,8 @@ public class WebCrawlerGUI extends JFrame {
     ArrayList<Object> validLinks = new ArrayList<>();
     ArrayList<String> validURLs = new ArrayList<>();
     ArrayList<String> validTitles = new ArrayList<>();
+
+    ArrayDeque<String> urlQueue = new ArrayDeque<>();
 
     public static String getFullLink(String rawLink) {
         String cleanURL = "";
@@ -84,24 +102,21 @@ public class WebCrawlerGUI extends JFrame {
     }
 
     public WebCrawlerGUI() {
-        Color background = new Color(59, 59, 59);
+        //Color background = new Color(59, 59, 59);
         Color myBlue = new Color(43, 125, 159);
 
         add(rootPanel);
         setTitle("Web Crawler");
-        setSize(800, 1000);
+        setSize(1000, 1000);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
 
         urlLabel.setFont(new Font("myFont", Font.PLAIN, 12));
-        titleLabel.setFont(new Font("myFont", Font.PLAIN, 12));
+        currentURL.setFont(new Font("myFont", Font.PLAIN, 12));
+        currentLinkURL.setFont(new Font("myFont", Font.PLAIN, 12));
 
         urlTextField.setFont(new Font("myFont", Font.PLAIN, 12));
         urlTextField.setBorder(new LineBorder(myBlue));
         urlTextField.setForeground(myBlue);
-
-        exportUrlTextField.setFont(new Font("myFont", Font.PLAIN, 12));
-        exportUrlTextField.setBorder(new LineBorder(myBlue));
-        exportUrlTextField.setForeground(myBlue);
 
         DefaultTableModel tableModel = new DefaultTableModel();
         titlesTable.setModel(tableModel);
@@ -170,17 +185,12 @@ public class WebCrawlerGUI extends JFrame {
 
         ActionListener activateParsing = e -> {
             runButton.setEnabled(false);
-            //setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR)); //turn on the waith cursor
+            //setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR)); //turn on the wait cursor
+            url = urlTextField.getText();
+            urlQueue.offerLast(url);
+
             DataParser dataParser = new DataParser(tableModel);
             dataParser.execute();
-        };
-
-        ActionListener tableClearer = e -> {
-            urlTextField.setText("");
-            webPageTitle.setText("");
-            tableModel.setRowCount(0);
-            progressBar.setValue(0);
-            progressBar.setString("");
         };
 
         ActionListener dataExporter = f -> {
@@ -204,7 +214,6 @@ public class WebCrawlerGUI extends JFrame {
         };
 
         runButton.addActionListener(activateParsing);
-        clearButton.addActionListener(tableClearer);
         saveButton.addActionListener(dataExporter);
 
     }
@@ -218,78 +227,96 @@ public class WebCrawlerGUI extends JFrame {
 
         @Override
         public Void doInBackground() throws Exception {
-            url = urlTextField.getText();
-            url = url.substring(0, url.length()-1);
-            Pattern urlPattern = Pattern.compile("https?://.*\\..*");
-            Matcher urlMatcher = urlPattern.matcher(urlTextField.getText());
+            int depth = Integer.parseInt(depthSearchNo.getText());
 
-            if (urlMatcher.find()) {
-                url = urlTextField.getText();
-                protocol = ProtocolSetter.setProtocol(url);
-                trimmedURL = LinkTrimming.trimming(url);
-            } else {
-                urlTextField.setText("Introduced URL is incorrect! Please try again!");
-            }
+            while (depth >= 0) {
+                System.out.println(urlQueue.peekFirst());
+                System.out.println(urlQueue);
+                currentParsedURL.setText(urlQueue.peekFirst());
+                currentWebpageTitle.setText(WebsiteTitleGetter.getTitle(urlQueue.peekFirst()));
 
-            //Collect all the links present in current HTML page.
-            try {
-                URL siteURL = new URL(url);
-                URLConnection urlConnection = siteURL.openConnection();
-                urlConnection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:63.0) Gecko/20100101 Firefox/63.0");
+                url = Objects.requireNonNull(urlQueue.pollFirst());
+                url = url.substring(0, url.length()-1);
 
-                if (urlConnection.getContentType().startsWith("text/html")) {
-                    System.out.println(urlConnection.getContentType());
+                Pattern urlPattern = Pattern.compile("https?://.*\\..*");
+                Matcher urlMatcher = urlPattern.matcher(urlTextField.getText());
 
-                    InputStream inputStream = new BufferedInputStream(urlConnection.getInputStream());
+                if (urlMatcher.find()) {
+                    url = urlTextField.getText();
+                    protocol = ProtocolSetter.setProtocol(url);
+                    trimmedURL = LinkTrimming.trimming(url);
+                } else {
+                    urlTextField.setText("Introduced URL is incorrect! Please try again!");
+                }
 
-                    String siteText = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
+                //Collect all the links present in current HTML page.
+                try {
+                    URL siteURL = new URL(url);
+                    URLConnection urlConnection = siteURL.openConnection();
+                    urlConnection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:63.0) Gecko/20100101 Firefox/63.0");
 
-                    Pattern p1 = Pattern.compile(".*href=['|\"].+['|\"][\\s>].*");
-                    Matcher m1 = p1.matcher(siteText);
-                    while (m1.find()) {
-                        rawLinksList.add(m1.group());
-                    }
+                    if (urlConnection.getContentType().startsWith("text/html")) {
+                        //System.out.println(urlConnection.getContentType());
 
-                    for (String str : rawLinksList) {
-                        Pattern rawLink = Pattern.compile("(?<=href=['\"])[\\d\\w\\S]+(?=['\"])");
-                        Matcher matcher = rawLink.matcher(str);
-                        if (matcher.find()) {
-                            relativeLinksList.add(matcher.group());
+                        InputStream inputStream = new BufferedInputStream(urlConnection.getInputStream());
+
+                        String siteText = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
+
+                        Pattern p1 = Pattern.compile(".*href=['|\"].+['|\"][\\s>].*");
+                        Matcher m1 = p1.matcher(siteText);
+                        while (m1.find()) {
+                            rawLinksList.add(m1.group());
                         }
 
+                        for (String str : rawLinksList) {
+                            Pattern rawLink = Pattern.compile("(?<=href=['\"])[\\d\\w\\S]+(?=['\"])");
+                            Matcher matcher = rawLink.matcher(str);
+                            if (matcher.find()) {
+                                relativeLinksList.add(matcher.group());
+                            }
+
+                        }
+                    }
+                } catch (MalformedURLException m) {
+                    urlTextField.setText("Introduced URL is incorrect! Please try again!");
+                } catch (IOException ioException) {
+                    urlTextField.setText("Data request from this url could not be performed! Please check the url validity!");
+                }
+
+
+                for (String s : relativeLinksList) {
+                    absoluteLinksList.add(getFullLink(s));
+                }
+
+                progressBar.setMaximum(absoluteLinksList.size()-1);
+
+                for (int i = 0; i < absoluteLinksList.size(); i++) {
+                    publish(i);
+                    String title = "";
+                    if (LinkValidityChecker.checker(absoluteLinksList.get(i))) {
+                        title = LinkTitleReturner.returner(absoluteLinksList.get(i));
+                        if (!title.equals("")) {
+                            validLinks.add(new Object[]{absoluteLinksList.get(i), title});
+                            validURLs.add(absoluteLinksList.get(i));
+                            validTitles.add(title);
+                        } else {
+                            title = "No title";
+                            validLinks.add(new Object[]{absoluteLinksList.get(i), title});
+                            validURLs.add(absoluteLinksList.get(i));
+                            validTitles.add(title);
+                        }
                     }
                 }
-            } catch (MalformedURLException m) {
-                urlTextField.setText("Introduced URL is incorrect! Please try again!");
-            } catch (IOException ioException) {
-                urlTextField.setText("Data request from this url could not be performed! Please check the url validity!");
-            }
 
-
-            for (String s : relativeLinksList) {
-                absoluteLinksList.add(getFullLink(s));
-            }
-
-            progressBar.setMaximum(absoluteLinksList.size()-1);
-
-            for (int i = 0; i < absoluteLinksList.size(); i++) {
-                publish(i);
-                String title = "";
-                if (LinkValidityChecker.checker(absoluteLinksList.get(i))) {
-                    title = LinkTitleReturner.returner(absoluteLinksList.get(i));
-                    if (!title.equals("")) {
-                        validLinks.add(new Object[]{absoluteLinksList.get(i), title});
-                        validURLs.add(absoluteLinksList.get(i));
-                        validTitles.add(title);
-                    } else {
-                        title = "No title";
-                        validLinks.add(new Object[]{absoluteLinksList.get(i), title});
-                        validURLs.add(absoluteLinksList.get(i));
-                        validTitles.add(title);
-                    }
+                for (String s : validURLs) {
+                    urlQueue.offerLast(s);
                 }
+
+                depth--;
             }
+
             return null;
+
         }
 
         @Override
@@ -312,7 +339,6 @@ public class WebCrawlerGUI extends JFrame {
             }
 
             runButton.setEnabled(true);
-            webPageTitle.setText(WebsiteTitleGetter.getTitle(url));
             rawLinksList.clear();
             relativeLinksList.clear();
             absoluteLinksList.clear();
