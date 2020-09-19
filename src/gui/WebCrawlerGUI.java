@@ -84,7 +84,7 @@ public class WebCrawlerGUI extends JFrame {
     }
 
     public WebCrawlerGUI() {
-        Color background = new Color(59, 59, 59);
+        //Color background = new Color(59, 59, 59);
         Color myBlue = new Color(43, 125, 159);
 
         add(rootPanel);
